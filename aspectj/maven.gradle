@@ -1,0 +1,19 @@
+apply plugin: 'maven'
+apply from: 'config.gradle'
+
+def config = project.ext
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri(project.projectDir.absolutePath + "/maven/")) {}
+            pom.project {
+                version config.pkg.version
+                artifactId config.pkg.artifactId
+                groupId config.pkg.groupId
+                packaging 'jar'
+                description config.pkg.desc
+            }
+        }
+    }
+}

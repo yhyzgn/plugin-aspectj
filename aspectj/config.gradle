@@ -1,0 +1,26 @@
+ext {
+    pkg = [
+            groupId   : 'com.yhy.plugins',
+            artifactId: 'plugin-aspectj',
+            version   : '1.0.0',
+            desc      : 'Aspectj Plugin.'
+    ]
+
+    developer = [
+            id   : 'yhyzgn',
+            name : 'yhyzgn',
+            email: 'yhyzgn@gmail.com'
+    ]
+
+    user = [
+            org: 'yhyzgn'
+    ]
+
+    cvs = [
+            url: 'https://github.com/yhyzgn/Plugins'
+    ]
+
+    doc = [
+            title: 'Aspectj Plugin'
+    ]
+}
