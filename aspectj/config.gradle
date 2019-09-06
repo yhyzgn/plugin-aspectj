@@ -2,7 +2,7 @@ ext {
     pkg = [
             groupId   : 'com.yhy.plugins',
             artifactId: 'plugin-aspectj',
-            version   : '1.0.0',
+            version   : '2.0.0',
             desc      : 'Aspectj Plugin.'
     ]
 

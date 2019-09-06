@@ -9,9 +9,11 @@ apply from: 'bintray.gradle'
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:3.3.2'
+
+    implementation 'com.android.tools.build:gradle:3.5.0'
     implementation 'org.aspectj:aspectjtools:1.8.13'
     implementation 'org.aspectj:aspectjrt:1.9.1'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 repositories {
