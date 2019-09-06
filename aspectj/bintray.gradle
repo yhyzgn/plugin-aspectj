@@ -6,6 +6,8 @@ apply plugin: 'maven'
 
 apply from: 'config.gradle'
 
+// 发布到远程仓库 命令：gradlew install bintrayUpload
+
 def config = project.ext
 
 group = config.pkg.groupId                                         // 数据仓库依赖第一部分

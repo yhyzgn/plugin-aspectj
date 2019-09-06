@@ -9,7 +9,13 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.JavaCompile
 
-public class AspectJPlugin1 implements Plugin<Project> {
+/**
+ * 使用ajc编译java代码，同时织入切片代码
+ * 使用 AspectJ 的编译器（ajc，一个java编译器的扩展）
+ * 对所有受 aspect 影响的类进行织入。
+ * 在 gradle 的编译 task 中增加额外配置，使之能正确编译运行。
+ */
+public class AspectJPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
@@ -31,8 +37,19 @@ public class AspectJPlugin1 implements Plugin<Project> {
             api 'org.aspectj:aspectjrt:1.9.1'
         }
 
+        log.error "========================";
+        log.error "Aspectj切片开始编织Class!";
+        log.error "========================";
+
         variants.all { variant ->
-            JavaCompile javaCompile = variant.javaCompileProvider.get()
+            JavaCompile javaCompile = null
+            if (variant.hasProperty('javaCompileProvider')) {
+                //gradle 4.10.1 +
+                javaCompile = variant.javaCompileProvider.get()
+            } else {
+                javaCompile = variant.hasProperty('javaCompiler') ? variant.javaCompiler : variant.javaCompile
+            }
+
             javaCompile.doLast {
                 String[] args = [
                         "-showWeaveInfo",

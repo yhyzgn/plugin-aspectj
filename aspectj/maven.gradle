@@ -3,6 +3,7 @@ apply from: 'config.gradle'
 
 def config = project.ext
 
+// 发布到本地maven仓库 命令：gradlew uploadArchives
 uploadArchives {
     repositories {
         mavenDeployer {
