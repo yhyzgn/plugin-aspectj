@@ -1,10 +1,15 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
+apply from: 'config.gradle'
+
 // 发布 本地
 apply from: 'maven.gradle'
 // 发布 jCenter
-apply from: 'bintray.gradle'
+//apply from: 'bintray.gradle'
+apply plugin: 'com.novoda.bintray-release'
+
+def config = project.ext
 
 dependencies {
     implementation gradleApi()
@@ -18,4 +23,13 @@ dependencies {
 
 repositories {
     mavenCentral()
+}
+
+publish {
+    userOrg = config.user.org
+    groupId = config.pkg.groupId
+    artifactId = config.pkg.artifactId
+    publishVersion = config.pkg.version
+    desc = config.pkg.desc
+    website = config.cvs.url
 }
