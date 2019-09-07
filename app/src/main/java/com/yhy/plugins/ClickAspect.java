@@ -2,6 +2,8 @@ package com.yhy.plugins;
 
 import android.util.Log;
 
+import com.yhy.plugins.annotation.ClickIgnored;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -11,6 +13,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * author : 颜洪毅
@@ -28,18 +31,9 @@ public class ClickAspect {
 
     private int lastClickViewId;
 
-    private volatile boolean ignore = false;
-
-    @Before("execution(@com.yhy.plugins.annotation.ClickIgnore * *(..))")
-    public void clickIgnore() {
-        Log.i("Ignore", "忽略了");
-        ignore = true;
-    }
-
-    @Before("execution(* android.view.View.OnClickListener.onClick(..))")
-    public void clickBefore() {
-        Log.i("Ignore", "clickBefore");
-        ignore = false;
+    @Around("execution(void *..*Activity+.onBackPressed())")
+    public void back() {
+        Log.i("Back", "返回了");
     }
 
     @Pointcut("execution(* android.view.View.OnClickListener.onClick(..))")
@@ -52,18 +46,26 @@ public class ClickAspect {
 
     @Around("click()||clickLambda()")
     public void joinPoint(ProceedingJoinPoint joinPoint) {
-        Log.i("AOP", "拦截到了" + ignore);
-//        Log.i("AOP", "拦截到了" + joinPoint.getTarget());
+        Log.i("AOP", "拦截到了" + Arrays.toString(joinPoint.getArgs()));
         Signature sn = joinPoint.getSignature();
+        Method method = null;
         if (sn instanceof MethodSignature) {
             MethodSignature ms = (MethodSignature) sn;
             Object target = joinPoint.getTarget();
-            Method method = null;
             try {
                 method = target.getClass().getMethod(ms.getName(), ms.getParameterTypes());
-                Log.i("AOP", "拦截到了，方法：" + method.getName());
             } catch (Exception ignored) {
             }
         }
+        if (null != method && method.isAnnotationPresent(ClickIgnored.class)) {
+            // 如果获取到method，就判断该方法是否有忽略注解
+            try {
+                joinPoint.proceed(joinPoint.getArgs());
+                return;
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+        Log.i("AOP", "拦截");
     }
 }

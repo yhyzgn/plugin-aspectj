@@ -2,13 +2,14 @@ package com.yhy.plugins;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.yhy.plugins.annotation.ClickIgnore;
+import com.yhy.plugins.annotation.ClickIgnored;
 
 /**
  * author : 颜洪毅
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         tvTextDb.setOnClickListener(new View.OnClickListener() {
-            @ClickIgnore
+            @ClickIgnored
             @Override
             public void onClick(View v) {
                 log("双击");
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
         tvTextLambda.setOnClickListener(v -> {
             log("拉姆达");
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void log(String text) {

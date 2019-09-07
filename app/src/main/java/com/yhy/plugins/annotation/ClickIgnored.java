@@ -13,6 +13,6 @@ import java.lang.annotation.Target;
  * desc   :
  */
 @Target({ElementType.METHOD})
-@Retention(RetentionPolicy.CLASS)
-public @interface ClickIgnore {
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ClickIgnored {
 }
