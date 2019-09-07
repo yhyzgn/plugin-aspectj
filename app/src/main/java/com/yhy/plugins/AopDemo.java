@@ -1,5 +1,7 @@
 package com.yhy.plugins;
 
+import android.app.Application;
+
 /**
  * author : 颜洪毅
  * e-mail : yhyzgn@gmail.com
@@ -7,8 +9,10 @@ package com.yhy.plugins;
  * version: 1.0.0
  * desc   :
  */
-public class AopDemo {
+public class AopDemo extends Application {
 
-    public void test() {
+    @Override
+    public void onCreate() {
+        super.onCreate();
     }
 }
