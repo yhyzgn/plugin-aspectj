@@ -34,12 +34,12 @@ public class AspectJPlugin implements Plugin<Project> {
         }
 
         project.dependencies {
-            api 'org.aspectj:aspectjrt:1.9.1'
+            api 'org.aspectj:aspectjrt:1.9.8.RC1'
         }
 
-        log.error "========================";
-        log.error "Aspectj切片开始编织Class!";
-        log.error "========================";
+        log.info "========================";
+        log.info "Aspectj切片开始编织Class!";
+        log.info "========================";
 
         variants.all { variant ->
             JavaCompile javaCompile = null
@@ -51,19 +51,14 @@ public class AspectJPlugin implements Plugin<Project> {
             }
 
             javaCompile.doLast {
-                String[] args = [
-                        "-showWeaveInfo",
-                        "-1.8",
-                        "-inpath", javaCompile.destinationDir.toString(),
-                        "-aspectpath", javaCompile.classpath.asPath,
-                        "-d", javaCompile.destinationDir.toString(),
-                        "-classpath", javaCompile.classpath.asPath,
-                        "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
-                ]
-                log.debug "ajc args: " + Arrays.toString(args)
-
                 MessageHandler handler = new MessageHandler(true);
-                new Main().run(args, handler);
+
+                // java
+                compileJava(handler)
+
+                // kotlin
+                compileKotlin(handler, variant.buildType.name)
+
                 for (IMessage message : handler.getMessages(null, true)) {
                     switch (message.getKind()) {
                         case IMessage.ABORT:
@@ -84,5 +79,37 @@ public class AspectJPlugin implements Plugin<Project> {
                 }
             }
         }
+    }
+
+    void compileJava(MessageHandler handler) {
+        String[] args = [
+                "-showWeaveInfo",
+                "-1.8",
+                "-inpath", javaCompile.destinationDirectory.toString(),
+                "-aspectpath", javaCompile.classpath.asPath,
+                "-d", javaCompile.destinationDirectory.toString(),
+                "-classpath", javaCompile.classpath.asPath,
+                "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
+        ]
+        log.info "ajc java args: " + Arrays.toString(args)
+        handleMessage(args, handler)
+    }
+
+    void compileKotlin(MessageHandler handler, String buildType) {
+        String[] args = [
+                "-showWeaveInfo",
+                "-1.8",
+                "-inpath", project.buildDir.path + "/tmp/kotlin-classes/" + buildType,
+                "-aspectpath", javaCompile.classpath.asPath,
+                "-d", project.buildDir.path + "/tmp/kotlin-classes/" + buildType,
+                "-classpath", javaCompile.classpath.asPath,
+                "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
+        ]
+        log.info "ajc kotlin args: " + Arrays.toString(args)
+        handleMessage(args, handler)
+    }
+
+    static void handleMessage(String[] args, MessageHandler handler) {
+        new Main().run(args, handler);
     }
 }
