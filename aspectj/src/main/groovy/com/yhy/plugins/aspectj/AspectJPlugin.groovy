@@ -42,6 +42,8 @@ public class AspectJPlugin implements Plugin<Project> {
         log.info "========================";
 
         variants.all { variant ->
+            println(variant.getProperties())
+
             JavaCompile javaCompile = null
             if (variant.hasProperty('javaCompileProvider')) {
                 //gradle 4.10.1 +
