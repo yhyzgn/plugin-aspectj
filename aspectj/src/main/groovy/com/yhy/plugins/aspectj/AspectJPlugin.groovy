@@ -96,18 +96,21 @@ public class AspectJPlugin implements Plugin<Project> {
     }
 
     static void compileKotlin(Project project, JavaCompile javaCompile, MessageHandler handler, String buildType) {
-        String ktlClassPath = File.pathSeparator + "tmp" + File.pathSeparator + "kotlin-classes" + File.pathSeparator + buildType
-        String[] args = [
-                "-showWeaveInfo",
-                "-1.8",
-                "-inpath", project.buildDir.path + ktlClassPath,
-                "-aspectpath", javaCompile.classpath.asPath,
-                "-d", project.buildDir.path + ktlClassPath,
-                "-classpath", javaCompile.classpath.asPath,
-                "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
-        ]
-        project.logger.error "ajc kotlin args: " + Arrays.toString(args)
-        handleMessage(args, handler)
+        String ktlClassPath = project.buildDir.path + File.separator + "tmp" + File.separator + "kotlin-classes" + File.separator + buildType
+        if (new File(ktlClassPath).exists()) {
+            // 存在才是 kotlin 项目
+            String[] args = [
+                    "-showWeaveInfo",
+                    "-1.8",
+                    "-inpath", ktlClassPath,
+                    "-aspectpath", javaCompile.classpath.asPath,
+                    "-d", ktlClassPath,
+                    "-classpath", javaCompile.classpath.asPath,
+                    "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
+            ]
+            project.logger.error "ajc kotlin args: " + Arrays.toString(args)
+            handleMessage(args, handler)
+        }
     }
 
     static void handleMessage(String[] args, MessageHandler handler) {
