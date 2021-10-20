@@ -1,5 +1,19 @@
-apply plugin: 'groovy'
-apply plugin: 'maven-publish'
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+gradlePlugin {
+    plugins {
+        aspectj {
+            // 插件ID
+            id = 'plugin-aspectj'
+            // 插件的实现类
+            implementationClass = 'com.yhy.plugins.aspectj.AspectJPlugin'
+        }
+    }
+}
 
 dependencies {
     implementation gradleApi()
