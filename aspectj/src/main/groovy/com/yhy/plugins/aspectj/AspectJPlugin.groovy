@@ -7,7 +7,6 @@ import org.aspectj.bridge.MessageHandler
 import org.aspectj.tools.ajc.Main
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.compile.JavaCompile
 
 /**
@@ -55,10 +54,10 @@ public class AspectJPlugin implements Plugin<Project> {
                 MessageHandler handler = new MessageHandler(true);
 
                 // java
-                compileJava(handler, logger)
+                compileJava(project, javaCompile, handler)
 
                 // kotlin
-                compileKotlin(handler, variant.buildType.name, logger)
+                compileKotlin(project, javaCompile, handler, variant.buildType.name)
 
                 for (IMessage message : handler.getMessages(null, true)) {
                     switch (message.getKind()) {
@@ -82,7 +81,7 @@ public class AspectJPlugin implements Plugin<Project> {
         }
     }
 
-    void compileJava(MessageHandler handler, Logger logger) {
+    static void compileJava(Project project, JavaCompile javaCompile, MessageHandler handler) {
         String[] args = [
                 "-showWeaveInfo",
                 "-1.8",
@@ -92,11 +91,11 @@ public class AspectJPlugin implements Plugin<Project> {
                 "-classpath", javaCompile.classpath.asPath,
                 "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
         ]
-        logger.error "ajc java args: " + Arrays.toString(args)
+        project.logger.error "ajc java args: " + Arrays.toString(args)
         handleMessage(args, handler)
     }
 
-    void compileKotlin(MessageHandler handler, String buildType, Logger logger) {
+    static void compileKotlin(Project project, JavaCompile javaCompile, MessageHandler handler, String buildType) {
         String[] args = [
                 "-showWeaveInfo",
                 "-1.8",
@@ -106,7 +105,7 @@ public class AspectJPlugin implements Plugin<Project> {
                 "-classpath", javaCompile.classpath.asPath,
                 "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
         ]
-        logger.error "ajc kotlin args: " + Arrays.toString(args)
+        project.logger.error "ajc kotlin args: " + Arrays.toString(args)
         handleMessage(args, handler)
     }
 
