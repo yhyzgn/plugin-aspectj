@@ -1,35 +1,30 @@
 apply plugin: 'groovy'
-apply plugin: 'maven'
-
-apply from: 'config.gradle'
-
-// 发布 本地
-apply from: 'maven.gradle'
-// 发布 jCenter
-//apply from: 'bintray.gradle'
-apply plugin: 'com.novoda.bintray-release'
-
-def config = project.ext
+apply plugin: 'maven-publish'
 
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
 
-    implementation 'com.android.tools.build:gradle:3.5.0'
-    implementation 'org.aspectj:aspectjtools:1.8.13'
-    implementation 'org.aspectj:aspectjrt:1.9.1'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.android.tools.build:gradle:7.0.3'
+    implementation 'org.aspectj:aspectjtools:1.9.8.RC1'
+    implementation 'org.aspectj:aspectjrt:1.9.8.RC1'
+    implementation 'com.google.code.gson:gson:2.8.8'
 }
 
-repositories {
-    mavenCentral()
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier 'sources'
+    from sourceSets.main.allSource
 }
 
-publish {
-    userOrg = config.user.org
-    groupId = config.pkg.groupId
-    artifactId = config.pkg.artifactId
-    publishVersion = config.pkg.version
-    desc = config.pkg.desc
-    website = config.cvs.url
+publishing {
+    publications {
+        pluginMaven(MavenPublication) {
+            group = "com.github.yhyzgn"
+            artifactId = "plugin-aspectj"
+            if (project.hasProperty('version')) {
+                version = project.findProperty('version')
+            }
+            artifact sourcesJar
+        }
+    }
 }
