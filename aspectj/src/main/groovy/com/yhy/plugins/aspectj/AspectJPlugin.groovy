@@ -35,7 +35,7 @@ public class AspectJPlugin implements Plugin<Project> {
         }
 
         project.dependencies {
-            api 'org.aspectj:aspectjrt:1.9.8.RC1'
+            api 'org.aspectj:aspectjrt:1.9.1'
         }
 
         logger.error "========================";
