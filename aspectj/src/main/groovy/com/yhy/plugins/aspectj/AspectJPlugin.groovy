@@ -85,9 +85,9 @@ public class AspectJPlugin implements Plugin<Project> {
         String[] args = [
                 "-showWeaveInfo",
                 "-1.8",
-                "-inpath", javaCompile.destinationDirectory.toString(),
+                "-inpath", javaCompile.destinationDir.toString(),
                 "-aspectpath", javaCompile.classpath.asPath,
-                "-d", javaCompile.destinationDirectory.toString(),
+                "-d", javaCompile.destinationDir.toString(),
                 "-classpath", javaCompile.classpath.asPath,
                 "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
         ]
@@ -96,12 +96,13 @@ public class AspectJPlugin implements Plugin<Project> {
     }
 
     static void compileKotlin(Project project, JavaCompile javaCompile, MessageHandler handler, String buildType) {
+        String ktlClassPath = File.pathSeparator + "tmp" + File.pathSeparator + "kotlin-classes" + File.pathSeparator + buildType
         String[] args = [
                 "-showWeaveInfo",
                 "-1.8",
-                "-inpath", project.buildDir.path + "/tmp/kotlin-classes/" + buildType,
+                "-inpath", project.buildDir.path + ktlClassPath,
                 "-aspectpath", javaCompile.classpath.asPath,
-                "-d", project.buildDir.path + "/tmp/kotlin-classes/" + buildType,
+                "-d", project.buildDir.path + ktlClassPath,
                 "-classpath", javaCompile.classpath.asPath,
                 "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
         ]
