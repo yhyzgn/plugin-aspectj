@@ -7,6 +7,7 @@ import org.aspectj.bridge.MessageHandler
 import org.aspectj.tools.ajc.Main
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.compile.JavaCompile
 
 /**
@@ -25,7 +26,7 @@ public class AspectJPlugin implements Plugin<Project> {
             throw new IllegalStateException("'android' or 'android-library' plugin required.")
         }
 
-        final def log = project.logger
+        final def logger = project.logger
         final def variants
         if (hasApp) {
             variants = project.android.applicationVariants
@@ -37,13 +38,11 @@ public class AspectJPlugin implements Plugin<Project> {
             api 'org.aspectj:aspectjrt:1.9.8.RC1'
         }
 
-        log.info "========================";
-        log.info "Aspectj切片开始编织Class!";
-        log.info "========================";
+        logger.error "========================";
+        logger.error "Aspectj切片开始编织Class!";
+        logger.error "========================";
 
         variants.all { variant ->
-            println(variant.getProperties())
-
             JavaCompile javaCompile = null
             if (variant.hasProperty('javaCompileProvider')) {
                 //gradle 4.10.1 +
@@ -56,26 +55,26 @@ public class AspectJPlugin implements Plugin<Project> {
                 MessageHandler handler = new MessageHandler(true);
 
                 // java
-                compileJava(handler)
+                compileJava(handler, logger)
 
                 // kotlin
-                compileKotlin(handler, variant.buildType.name)
+                compileKotlin(handler, variant.buildType.name, logger)
 
                 for (IMessage message : handler.getMessages(null, true)) {
                     switch (message.getKind()) {
                         case IMessage.ABORT:
                         case IMessage.ERROR:
                         case IMessage.FAIL:
-                            log.error message.message, message.thrown
+                            logger.error message.message, message.thrown
                             break;
                         case IMessage.WARNING:
-                            log.warn message.message, message.thrown
+                            logger.warn message.message, message.thrown
                             break;
                         case IMessage.INFO:
-                            log.info message.message, message.thrown
+                            logger.info message.message, message.thrown
                             break;
                         case IMessage.DEBUG:
-                            log.debug message.message, message.thrown
+                            logger.debug message.message, message.thrown
                             break;
                     }
                 }
@@ -83,7 +82,7 @@ public class AspectJPlugin implements Plugin<Project> {
         }
     }
 
-    void compileJava(MessageHandler handler) {
+    void compileJava(MessageHandler handler, Logger logger) {
         String[] args = [
                 "-showWeaveInfo",
                 "-1.8",
@@ -93,11 +92,11 @@ public class AspectJPlugin implements Plugin<Project> {
                 "-classpath", javaCompile.classpath.asPath,
                 "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
         ]
-        log.info "ajc java args: " + Arrays.toString(args)
+        logger.error "ajc java args: " + Arrays.toString(args)
         handleMessage(args, handler)
     }
 
-    void compileKotlin(MessageHandler handler, String buildType) {
+    void compileKotlin(MessageHandler handler, String buildType, Logger logger) {
         String[] args = [
                 "-showWeaveInfo",
                 "-1.8",
@@ -107,7 +106,7 @@ public class AspectJPlugin implements Plugin<Project> {
                 "-classpath", javaCompile.classpath.asPath,
                 "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
         ]
-        log.info "ajc kotlin args: " + Arrays.toString(args)
+        logger.error "ajc kotlin args: " + Arrays.toString(args)
         handleMessage(args, handler)
     }
 
